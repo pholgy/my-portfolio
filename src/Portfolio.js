@@ -9,10 +9,17 @@ const Portfolio = () => {
   // Mouse position state for gradient effect
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   
-  // Track mouse movement
+  // Track mouse movement with throttling for better performance
   useEffect(() => {
+    let lastTime = 0;
+    const throttleTime = 40; // Throttle to ~25 updates per second instead of every frame
+    
     const handleMouseMove = (e) => {
-      setMousePosition({ x: e.clientX, y: e.clientY });
+      const now = Date.now();
+      if (now - lastTime > throttleTime) {
+        setMousePosition({ x: e.clientX, y: e.clientY });
+        lastTime = now;
+      }
     };
     
     window.addEventListener('mousemove', handleMouseMove);
@@ -148,8 +155,8 @@ const Portfolio = () => {
             whileHover={{ scale: 1.05 }}
             transition={{ type: "spring", stiffness: 400, damping: 10 }}
           >
-            <span className="bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-400">PHOLGRIT</span>
-            <span className="text-gray-400">ANONGCHAI</span>
+            <span className="bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-400 inline-block">PHOLGRIT</span>
+            <span className="text-gray-400 inline-block">ANONGCHAI</span>
             <div className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-white via-blue-400 to-purple-500 transition-all duration-300 group-hover:w-full"></div>
           </motion.div>
           <nav className="hidden md:flex space-x-8">
@@ -190,62 +197,54 @@ const Portfolio = () => {
         <div className="absolute inset-0 bg-gradient-to-r from-black/90 to-transparent z-10"></div>
         <div className="absolute inset-0 bg-black" style={gradientStyle}></div>
         
-        {/* Animated particles background */}
+        {/* Simplified animated particles background */}
         <div className="absolute inset-0 z-0">
-          {[...Array(20)].map((_, i) => (
+          {/* Reduce the number of particles from 20 to 10 */}
+          {[...Array(10)].map((_, i) => (
             <motion.div
               key={i}
-              className="absolute w-1 h-1 md:w-2 md:h-2 rounded-full bg-blue-500/30"
+              className="absolute w-1 h-1 md:w-2 md:h-2 rounded-full bg-blue-500/30 transform-gpu" // Add transform-gpu for hardware acceleration
               initial={{ 
-                x: Math.random() * 100 + "%", 
-                y: Math.random() * 100 + "%",
-                opacity: Math.random() * 0.5 + 0.3
+                x: `${Math.random() * 100}%`, 
+                y: `${Math.random() * 100}%`,
+                opacity: 0.3 + (i * 0.05) % 0.3
               }}
               animate={{ 
                 y: [
-                  Math.random() * 100 + "%", 
-                  Math.random() * 100 + "%", 
-                  Math.random() * 100 + "%"
+                  `${20 + i * 5}%`, 
+                  `${50 + i * 3}%`, 
+                  `${30 + i * 4}%`
                 ],
-                opacity: [
-                  Math.random() * 0.5 + 0.3,
-                  Math.random() * 0.8 + 0.2,
-                  Math.random() * 0.5 + 0.3
-                ],
-                scale: [1, Math.random() * 1.5 + 0.5, 1]
+                opacity: [0.3, 0.5, 0.3]
               }}
               transition={{ 
                 repeat: Infinity, 
-                duration: Math.random() * 10 + 20, 
+                duration: 30 + i, 
                 ease: "linear"
               }}
             />
           ))}
-          {[...Array(15)].map((_, i) => (
+          {/* Reduce the number of particles from 15 to 8 */}
+          {[...Array(8)].map((_, i) => (
             <motion.div
-              key={i + 20}
-              className="absolute w-1 h-1 md:w-2 md:h-2 rounded-full bg-purple-500/30"
+              key={i + 10}
+              className="absolute w-1 h-1 md:w-2 md:h-2 rounded-full bg-purple-500/30 transform-gpu" // Add transform-gpu for hardware acceleration
               initial={{ 
-                x: Math.random() * 100 + "%", 
-                y: Math.random() * 100 + "%",
-                opacity: Math.random() * 0.5 + 0.3
+                x: `${Math.random() * 100}%`, 
+                y: `${Math.random() * 100}%`,
+                opacity: 0.3 + (i * 0.06) % 0.3
               }}
               animate={{ 
                 y: [
-                  Math.random() * 100 + "%", 
-                  Math.random() * 100 + "%", 
-                  Math.random() * 100 + "%"
+                  `${30 + i * 4}%`, 
+                  `${60 + i * 2}%`, 
+                  `${40 + i * 3}%`
                 ],
-                opacity: [
-                  Math.random() * 0.5 + 0.3,
-                  Math.random() * 0.8 + 0.2,
-                  Math.random() * 0.5 + 0.3
-                ],
-                scale: [1, Math.random() * 1.5 + 0.5, 1]
+                opacity: [0.3, 0.5, 0.3]
               }}
               transition={{ 
                 repeat: Infinity, 
-                duration: Math.random() * 10 + 20, 
+                duration: 35 + i, 
                 ease: "linear"
               }}
             />
@@ -267,7 +266,7 @@ const Portfolio = () => {
             Hello, I'm
           </motion.h3>
           <motion.h1 
-            className="text-5xl md:text-7xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-white via-blue-200 to-white"
+            className="text-5xl md:text-7xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-white via-blue-200 to-white inline-block"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.6 }}
@@ -284,10 +283,11 @@ const Portfolio = () => {
               words={['AI/ML Engineer', 'Data Scientist', 'LLM Specialist', 'Full-Stack Developer']}
               loop={true}
               cursor
-              cursorStyle="_"
+              cursorStyle="|"
               typeSpeed={70}
               deleteSpeed={50}
               delaySpeed={1000}
+              cursorClassName="cursor-default"
             />
           </motion.div>
           <motion.p 
@@ -532,14 +532,15 @@ const Portfolio = () => {
               <motion.div 
                 key={index} 
                 variants={fadeInUp}
-                whileHover={{ y: -10 }}
-                transition={{ duration: 0.3 }}
+                className="transform-gpu" // Use hardware acceleration
+                initial={{ y: 0 }} // Set initial position explicitly
+                whileHover={{ y: -10, transition: { duration: 0.2, ease: "easeOut" } }}
               >
                 <div
-                  className="group relative rounded-xl overflow-hidden h-full shadow-lg border border-white/10 hover:border-blue-500/30 transition-all duration-500"
+                  className="group relative rounded-xl overflow-hidden h-full shadow-lg border border-white/10 hover:border-blue-500/30 transition duration-300"
                 >
                   <div className="absolute inset-0 bg-gradient-to-br from-gray-800/80 via-gray-900/90 to-black z-0"></div>
-                  <div className="absolute inset-0 bg-gradient-to-r from-blue-500/0 to-blue-500/0 opacity-0 group-hover:from-blue-500/5 group-hover:to-blue-500/0 group-hover:opacity-100 transition-all duration-500 z-0"></div>
+                  <div className="absolute inset-0 bg-gradient-to-r from-blue-500/0 to-blue-500/0 opacity-0 group-hover:from-blue-500/5 group-hover:to-blue-500/0 group-hover:opacity-100 transition duration-300 z-0"></div>
                   
                   {/* Top Accent Bar */}
                   <div className="h-1.5 bg-gradient-to-r from-blue-500 to-purple-600 w-full"></div>
@@ -549,7 +550,7 @@ const Portfolio = () => {
                       <span className="text-sm px-3 py-1 bg-blue-900/30 border border-blue-500/20 rounded-full text-blue-300 font-medium">{project.category}</span>
                     </div>
                     
-                    <h3 className="text-xl font-bold mt-3 mb-3 text-white group-hover:text-blue-400 transition-colors duration-300">{project.title}</h3>
+                    <h3 className="text-xl font-bold mt-3 mb-3 text-white group-hover:text-blue-400 transition-colors duration-200">{project.title}</h3>
                     
                     <p className="text-gray-300 mb-6 leading-relaxed flex-grow">{project.description}</p>
                     
@@ -559,8 +560,8 @@ const Portfolio = () => {
                         href={project.github} 
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex items-center font-medium text-gray-400 hover:text-white group-hover:text-blue-400 transition-all duration-300 relative"
-                        whileHover={{ x: 5 }}
+                        className="inline-flex items-center font-medium text-gray-400 hover:text-white group-hover:text-blue-400 transition-colors duration-200"
+                        whileHover={{ x: 5, transition: { duration: 0.2 } }}
                       >
                         GitHub <ExternalLink className="ml-2 w-4 h-4" />
                       </motion.a>
@@ -596,14 +597,15 @@ const Portfolio = () => {
               <motion.div 
                 key={index} 
                 variants={fadeInUp}
-                whileHover={{ y: -10 }}
-                transition={{ duration: 0.3 }}
+                className="transform-gpu" // Use hardware acceleration
+                initial={{ y: 0 }} // Set initial position explicitly
+                whileHover={{ y: -10, transition: { duration: 0.2, ease: "easeOut" } }}
               >
                 <div
-                  className="group relative rounded-xl overflow-hidden h-full shadow-lg border border-white/10 hover:border-purple-500/30 transition-all duration-500"
+                  className="group relative rounded-xl overflow-hidden h-full shadow-lg border border-white/10 hover:border-purple-500/30 transition duration-300"
                 >
                   <div className="absolute inset-0 bg-gradient-to-br from-gray-800/80 via-gray-900/90 to-black z-0"></div>
-                  <div className="absolute inset-0 bg-gradient-to-r from-purple-500/0 to-purple-500/0 opacity-0 group-hover:from-purple-500/5 group-hover:to-purple-500/0 group-hover:opacity-100 transition-all duration-500 z-0"></div>
+                  <div className="absolute inset-0 bg-gradient-to-r from-purple-500/0 to-purple-500/0 opacity-0 group-hover:from-purple-500/5 group-hover:to-purple-500/0 group-hover:opacity-100 transition duration-300 z-0"></div>
                   
                   {/* Top Accent Bar */}
                   <div className="h-1.5 bg-gradient-to-r from-purple-500 to-blue-600 w-full"></div>
@@ -613,7 +615,7 @@ const Portfolio = () => {
                       <span className="text-sm px-3 py-1 bg-purple-900/30 border border-purple-500/20 rounded-full text-purple-300 font-medium">{project.category}</span>
                     </div>
                     
-                    <h3 className="text-xl font-bold mt-3 mb-3 text-white group-hover:text-purple-400 transition-colors duration-300">{project.title}</h3>
+                    <h3 className="text-xl font-bold mt-3 mb-3 text-white group-hover:text-purple-400 transition-colors duration-200">{project.title}</h3>
                     
                     <p className="text-gray-300 mb-6 leading-relaxed flex-grow">{project.description}</p>
                     
@@ -623,8 +625,8 @@ const Portfolio = () => {
                         href={project.github} 
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex items-center font-medium text-gray-400 hover:text-white group-hover:text-purple-400 transition-all duration-300 relative"
-                        whileHover={{ x: 5 }}
+                        className="inline-flex items-center font-medium text-gray-400 hover:text-white group-hover:text-purple-400 transition-colors duration-200"
+                        whileHover={{ x: 5, transition: { duration: 0.2 } }}
                       >
                         GitHub <ExternalLink className="ml-2 w-4 h-4" />
                       </motion.a>
@@ -993,8 +995,8 @@ const Portfolio = () => {
               whileHover={{ scale: 1.05 }}
               transition={{ type: "spring", stiffness: 400, damping: 10 }}
             >
-              <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-500">PHOLGRIT</span>
-              <span className="text-gray-400">ANONGCHAI</span>
+              <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-500 inline-block">PHOLGRIT</span>
+              <span className="text-gray-400 inline-block">ANONGCHAI</span>
               <div className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 transition-all duration-300 group-hover:w-full"></div>
             </motion.div>
             <p className="text-gray-500">© 2025 Pholgrit Anongchai. All rights reserved.</p>

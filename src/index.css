@@ -1,3 +1,37 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Ensure proper cursor styles */
+* {
+  cursor: default;
+}
+
+a, button, [role="button"], input, textarea, select, .group, [tabindex]:not([tabindex="-1"]) {
+  cursor: pointer !important;
+}
+
+/* Fix for link-like elements that might not be captured by the above selector */
+.group, .hover\:text-white, [class*="hover\:"], a *, button * {
+  cursor: pointer !important;
+}
+
+/* Ensure cursor is normal text cursor for text areas */
+p, h1, h2, h3, h4, h5, h6, span:not([role="button"]) {
+  cursor: text;
+}
+
+/* For any other elements that might need specific cursor styles */
+[class*="cursor-"]:not(.cursor-pointer):not(.cursor-default) {
+  cursor: pointer !important;
+}
+
+/* Fix text underline display */
+.text-transparent {
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
+}
+
+/* Fix for Typewriter cursor */
+.Typewriter__cursor {
+  cursor: text !important;
+}
